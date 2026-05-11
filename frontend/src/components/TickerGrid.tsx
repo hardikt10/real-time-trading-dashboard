@@ -18,6 +18,31 @@ const hasActiveAlert = (rule: PriceAlertRule): boolean => {
   return rule.enabled && Number.isFinite(threshold) && threshold > 0;
 };
 
+const POSITIVE_CHANGE_PILL =
+  "border-emerald-400/25 bg-emerald-400/25 text-emerald-100";
+const NEGATIVE_CHANGE_PILL =
+  "border-rose-400/30 bg-rose-500/20 text-rose-100";
+
+const getChangeReferenceCopy = (ticker: LiveTicker): string =>
+  ticker.changeReferenceLabel === "utc_midnight"
+    ? `UTC 00:00 ${formatCurrency(ticker.changeReferencePrice)}`
+    : `prev close ${formatCurrency(ticker.changeReferencePrice)}`;
+
+const ChangeArrow = ({ direction }: { direction: "up" | "down" }) => (
+  <svg
+    aria-hidden="true"
+    className="h-3 w-3 shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2.25"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d={direction === "up" ? "m6 14 6-6 6 6" : "m6 10 6 6 6-6"} />
+  </svg>
+);
+
 export const TickerGrid = ({
   getAlertRule,
   onArmAlert,
@@ -101,24 +126,20 @@ export const TickerGrid = ({
                 <h3 className="mt-2 truncate text-base font-semibold text-white sm:text-lg">{ticker.name}</h3>
               </div>
               <span
-                className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
-                  isPositive
-                    ? "border-(--positive)/25 bg-(--positive)/10 text-(--positive)"
-                    : "border-(--negative)/25 bg-(--negative)/10 text-(--negative)"
+                aria-label={`${isPositive ? "Up" : "Down"} ${formatPercent(ticker.changePercent)}`}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold tabular-nums ${
+                  isPositive ? POSITIVE_CHANGE_PILL : NEGATIVE_CHANGE_PILL
                 }`}
               >
-                {isPositive ? "Up" : "Down"}
+                <ChangeArrow direction={isPositive ? "up" : "down"} />
+                <span>{Math.abs(ticker.changePercent).toFixed(2)}%</span>
               </span>
             </div>
             <p className="mt-5 text-2xl font-semibold tracking-tight text-white sm:mt-6 sm:text-[1.75rem]">
               {formatCurrency(ticker.price)}
             </p>
-            <p
-              className={`mt-2 text-sm font-medium ${
-                isPositive ? "text-(--positive)" : "text-(--negative)"
-              }`}
-            >
-              {formatPercent(ticker.changePercent)}
+            <p className="mt-2 text-xs text-slate-400">
+              Day {formatPercent(ticker.changePercent)} vs {getChangeReferenceCopy(ticker)}
             </p>
             {isAlertSet ? (
               <p className="mt-3 text-xs text-cyan-200/90">

@@ -186,7 +186,7 @@ const PriceChartCard = ({
           <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(low)}</p>
         </div>
         <div className="rounded-2xl border border-slate-800/90 bg-slate-950/45 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:p-5">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Net Change</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Period Change</p>
           <p
             className={`mt-2 text-lg font-semibold ${
               seriesChange >= 0 ? "text-(--positive)" : "text-(--negative)"

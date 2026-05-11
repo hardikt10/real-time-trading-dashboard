@@ -1,29 +1,24 @@
 # Real-Time Trading Dashboard
 
-A full-stack mock trading dashboard with REST-backed ticker data, generated historical candles, and a WebSocket stream for live price updates.
+A full-stack mock trading dashboard with REST-backed ticker data, generated historical candles, WebSocket live ticks, mocked authentication, cached history, price alerts, Docker packaging, and Kubernetes manifests.
 
-The app is intentionally scoped to market-data display. It does not place orders, manage portfolios, connect wallets, or call real market APIs.
+## What Is Included
 
-## Features
+- Backend service in `backend/`
+- Frontend service in `frontend/`
+- Docker Compose flow in `docker-compose.yml`
+- Kubernetes manifests in `k8s/`
+- Helper scripts in `scripts/`
 
-- Mock market data engine for `AAPL`, `TSLA`, `BTC-USD`, `ETH-USD`, and `MSFT`
-- REST endpoint for the current ticker snapshot
-- REST endpoint for mocked OHLC historical candles
-- WebSocket stream for live ticker updates
-- React + TypeScript dashboard with ticker switching
-- Candlestick and area chart views with interval switching
-- Compact dark watchlist, live price cards, loading and error states
-- Mock cookie-backed login used by both REST and WebSocket requests
-- Optional price-threshold alerts with local saved rules and in-app notifications
-- Backend unit tests for core market, auth, history, and WebSocket protocol logic
-- Dockerfiles, production frontend Nginx proxying, and `docker-compose.yml` for local container startup
+## Key Features
 
-## Tech Stack
-
-- Backend: Node.js, TypeScript, Express, `ws`
-- Frontend: React 19, TypeScript, Vite, Tailwind CSS 4, Recharts
-- Testing: Vitest
-- Tooling: ESLint, Docker, Docker Compose
+- Live ticker stream for `AAPL`, `TSLA`, `BTC-USD`, `ETH-USD`, and `MSFT`
+- Historical OHLC candles for `1m`, `5m`, `15m`, and `1h`
+- Mocked cookie-backed authentication shared by REST and WebSocket
+- Backend history caching and frontend interval-aware history caching
+- Price-threshold alerts with bell popup and in-app notifications
+- Backend unit tests for pricing, auth, history, and WebSocket protocol
+- Production frontend served by Nginx with `/api` and `/ws` reverse-proxied to backend
 
 ## Project Structure
 
@@ -31,147 +26,261 @@ The app is intentionally scoped to market-data display. It does not place orders
 .
 |-- backend/
 |   |-- src/
+|   |   |-- constants/
+|   |   |-- middleware/
 |   |   |-- routes/
 |   |   |-- services/
-|   |   |-- websocket/
-|   |   `-- server.ts
+|   |   |-- utils/
+|   |   `-- websocket/
 |   `-- tests/
 |-- frontend/
-|   |-- src/
-|   |   |-- components/
-|   |   |-- hooks/
-|   |   |-- lib/
-|   |   |-- types/
-|   |   `-- App.tsx
-|   `-- Dockerfile
-|-- docker-compose.yml
+|   |-- nginx/
+|   `-- src/
 |-- k8s/
+|-- scripts/
+|-- docker-compose.yml
 `-- README.md
 ```
 
-## Local Setup
+## Minimum Requirements By Scenario
 
-Install and run the backend:
+### 1. Code review only
 
-```bash
-cd backend
-npm install
-npm run dev
-```
+- Web browser
 
-The backend runs on `http://localhost:8080`.
+### 2. Local app run without containers
 
-Install and run the frontend in another terminal:
+- Node.js 20+
+- npm
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+### 3. Docker verification
 
-The frontend runs on `http://localhost:5173`. During local development, Vite proxies `/api` and `/ws` to the backend.
+- Docker Desktop on Windows or any working Docker Engine with Compose support
 
-Demo credentials:
+### 4. Kubernetes verification
+
+- Docker Desktop
+- Kubernetes enabled inside Docker Desktop, or another working local cluster
+- `kubectl`
+
+### 5. Fresh-machine validation from GitHub
+
+- `Git` if cloning directly
+- Or a browser if downloading the repository ZIP
+
+## Demo Credentials
 
 ```text
 Email: trader@demo.dev
 Password: demo1234
 ```
 
-## Docker Setup
+## How Reviewers Can Run It
 
-Run both services:
+### Option A: Run locally with Node.js
+
+Use this if you want the simplest setup and do not need containers.
+
+Terminal 1:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Terminal 2:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open:
+
+- Frontend: `http://localhost:5173`
+- Backend health: `http://localhost:8080/health`
+
+Notes:
+
+- Vite proxies `/api` and `/ws` to the backend during local development.
+- This is the fastest way to verify the app behavior.
+
+### Option B: Run with Docker Compose
+
+Use this if you want the containerized setup.
 
 ```bash
 docker compose up --build
 ```
 
-Services:
-
-- Frontend: `http://localhost:4173`
-- Backend: `http://localhost:8080`
-
-The frontend container now serves the built app through Nginx and proxies `/api` and `/ws` to the backend container, so the browser stays on one origin.
-
-PowerShell helper:
+Or on PowerShell:
 
 ```powershell
 ./scripts/docker-up.ps1
 ```
 
-Detached mode:
+Open:
 
-```powershell
-./scripts/docker-up.ps1 -Detach
-```
+- Frontend: `http://localhost:4173`
+- Backend health: `http://localhost:8080/health`
 
-## Kubernetes Setup
+Notes:
 
-The manifests in `k8s/` run the same two images with health probes, a namespace, a Kustomize entrypoint, local NodePort services, and an optional ingress.
+- The frontend container is served by Nginx.
+- Nginx proxies `/api` and `/ws` to the backend container.
+- Browser traffic stays on one origin in the Docker flow.
 
-Build the images for a local Kubernetes cluster:
+### Option C: Run with Kubernetes
 
-```bash
-docker build -t trading-dashboard-backend:latest ./backend
-docker build -t trading-dashboard-frontend:latest ./frontend
-```
+Use this if you want to validate the `k8s/` manifests.
 
-Apply everything with one Kubernetes command:
+First confirm Kubernetes is available:
 
 ```bash
-kubectl apply -k k8s
+kubectl config current-context
+kubectl cluster-info
 ```
 
-Local endpoints:
-
-- Frontend: `http://localhost:30000`
-- Backend: `http://localhost:30080`
-
-The frontend pod serves the built app through Nginx and proxies `/api` and `/ws` to the backend service inside the cluster via `BACKEND_UPSTREAM=http://trading-dashboard-backend:8080`.
-
-PowerShell helper:
+Then deploy:
 
 ```powershell
 ./scripts/k8s-deploy.ps1 -BuildImages
 ```
 
-The manifests also include an optional ingress for `trading-dashboard.local` if your cluster has an ingress controller. For Docker Desktop Kubernetes, the NodePort URLs above are the shortest path.
+Or manually:
 
-## Test Commands
+```bash
+docker build -t trading-dashboard-backend:latest ./backend
+docker build -t trading-dashboard-frontend:latest ./frontend
+kubectl apply -k k8s
+kubectl -n trading-dashboard set image deployment/trading-dashboard-backend backend=trading-dashboard-backend:latest
+kubectl -n trading-dashboard set image deployment/trading-dashboard-frontend frontend=trading-dashboard-frontend:latest
+```
 
-Backend:
+Check rollout:
+
+```bash
+kubectl -n trading-dashboard get pods
+kubectl -n trading-dashboard get svc
+```
+
+Expected result:
+
+- `trading-dashboard-backend` pod becomes `1/1 Running`
+- `trading-dashboard-frontend` pod becomes `1/1 Running`
+
+#### Important Docker Desktop Kubernetes note
+
+On the newer Docker Desktop `kind` cluster, `NodePort` may not always be directly reachable from Windows through `localhost:30000` and `localhost:30080`.
+
+If direct browser access works, use:
+
+- Frontend: `http://localhost:30000`
+- Backend health: `http://localhost:30080/health`
+
+If direct `NodePort` access does not work, use port-forward:
+
+PowerShell window 1:
+
+```bash
+kubectl -n trading-dashboard port-forward svc/trading-dashboard-frontend 30000:80
+```
+
+PowerShell window 2:
+
+```bash
+kubectl -n trading-dashboard port-forward svc/trading-dashboard-backend 30080:8080
+```
+
+Then open:
+
+- Frontend: `http://localhost:30000`
+- Backend health: `http://localhost:30080/health`
+
+This is the most reliable verification flow on Docker Desktop Kubernetes.
+
+## Fresh Machine Setup
+
+### If Git is installed
+
+```bash
+git clone https://github.com/hardikt10/real-time-trading-dashboard.git
+cd real-time-trading-dashboard
+```
+
+### If Git is not installed
+
+1. Download the repository as ZIP from GitHub
+2. Extract it
+3. Open a terminal in the extracted project root
+
+## Verification Checklist
+
+### Backend
 
 ```bash
 cd backend
+npm install
 npm run build
 npm test
 ```
 
-Frontend:
+### Frontend
 
 ```bash
 cd frontend
+npm install
 npm run lint
 npm run build
 ```
 
-## Bonus Features Implemented
+### Manual app checks
 
-- Mock authentication with cookie-backed sessions shared by REST and WebSocket requests.
-- Short-lived historical candle caching in the backend and interval-aware client history caching.
-- Price threshold alerts with per-instrument visual state, editable trigger prices, local persistence, and in-app notifications when alerts are saved or triggered.
+- Login works with the demo credentials
+- Ticker cards load
+- WebSocket live prices update
+- Historical chart loads for `1m`, `5m`, `15m`, and `1h`
+- Bell icon opens the price alert popup
+- Price alert triggers when threshold is reached
 
-## API Endpoints
+## Scripts
+
+### Root helper scripts
+
+- `./scripts/docker-up.ps1`
+- `./scripts/k8s-deploy.ps1 -BuildImages`
+
+### Frontend
+
+```bash
+cd frontend
+npm run dev
+npm run lint
+npm run build
+```
+
+### Backend
+
+```bash
+cd backend
+npm run dev
+npm run build
+npm test
+```
+
+## API Summary
 
 ### `GET /health`
 
-Returns a basic health response.
+Basic health endpoint for local checks and container probes.
 
 ### `POST /api/auth/login`
 
 Creates a mocked in-memory session and sets the session cookie.
 
-Request:
+Request body:
 
 ```json
 {
@@ -182,40 +291,19 @@ Request:
 
 ### `GET /api/auth/me`
 
-Returns the current demo user when the session cookie is valid.
+Returns the current mocked user for a valid session cookie.
 
 ### `POST /api/auth/logout`
 
-Invalidates the current demo session.
+Clears the mocked session.
 
 ### `GET /api/tickers`
 
 Returns the current live ticker snapshot.
 
-Example response:
-
-```json
-{
-  "data": [
-    {
-      "symbol": "AAPL",
-      "name": "Apple Inc.",
-      "assetClass": "equity",
-      "price": 191.42,
-      "changePercent": 0.75,
-      "updatedAt": "2026-05-05T13:00:12.000Z"
-    }
-  ]
-}
-```
-
-### `GET /api/tickers/available`
-
-Returns the available ticker universe and supported history intervals.
-
 ### `GET /api/tickers/:symbol/history?points=90&interval=1m`
 
-Returns mocked OHLC candles for the selected symbol.
+Returns mocked OHLC candle data for the selected symbol and interval.
 
 Supported intervals:
 
@@ -224,103 +312,36 @@ Supported intervals:
 - `15m`
 - `1h`
 
-Example response:
-
-```json
-{
-  "symbol": "AAPL",
-  "interval": "1m",
-  "points": 90,
-  "cached": true,
-  "generatedAt": "2026-05-05T13:00:00.000Z",
-  "data": [
-    {
-      "timestamp": "2026-05-05T11:31:00.000Z",
-      "open": 189.72,
-      "high": 190.18,
-      "low": 189.41,
-      "close": 189.96
-    }
-  ]
-}
-```
-
-Authenticated endpoints require the cookie issued by `/api/auth/login`.
-
-## WebSocket Message Format
-
-Socket endpoint:
+### WebSocket endpoint
 
 ```text
 ws://localhost:8080/ws
 ```
 
-Subscribe to specific symbols:
+The frontend uses the same mocked session cookie for both REST and WebSocket flows.
 
-```json
-{
-  "type": "subscribe",
-  "symbols": ["AAPL", "TSLA"]
-}
-```
+## Assumptions And Trade-offs
 
-Ping:
-
-```json
-{
-  "type": "ping"
-}
-```
-
-Welcome message:
-
-```json
-{
-  "type": "welcome",
-  "data": {
-    "availableSymbols": ["AAPL", "TSLA", "BTC-USD", "ETH-USD", "MSFT"],
-    "heartbeatMs": 15000,
-    "updateIntervalMs": 1000
-  }
-}
-```
-
-Tick message:
-
-```json
-{
-  "type": "tick",
-  "meta": {
-    "sequence": 12,
-    "generatedAt": "2026-05-05T13:00:12.000Z"
-  },
-  "data": [
-    {
-      "symbol": "AAPL",
-      "name": "Apple Inc.",
-      "assetClass": "equity",
-      "price": 191.42,
-      "changePercent": 0.75,
-      "updatedAt": "2026-05-05T13:00:12.000Z"
-    }
-  ]
-}
-```
-
-The WebSocket uses the same mocked session cookie as the REST API.
-
-## Assumptions and Trade-offs
-
-- Market data is generated in memory. It is suitable for the challenge, not for production trading.
-- Historical candles are mocked and cached briefly instead of being stored in a database.
-- Authentication is mocked with in-memory sessions because the dashboard only needs a demo gate. Sessions use opaque tokens in `HttpOnly`, `SameSite=Lax` cookies, with `Secure` enabled in production.
-- The chart uses Recharts and always renders the full loaded history window for the selected interval.
-- The app keeps a bounded number of live candles on the client to avoid unnecessary memory growth.
-- The backend sends basic security headers and uses health endpoints for Docker/Kubernetes probes.
+- Market data is generated in memory and is meant for assessment/demo use, not real trading.
+- The backend follows a microservices-friendly split between routes, services, middleware, and websocket handling, but is intentionally delivered as two deployable services for the exercise: frontend and backend.
+- Authentication is mocked with in-memory sessions because the task asked for a mocked auth flow, not a production identity provider.
+- Historical candles are generated and cached in memory instead of stored in a database.
+- Equities use day change versus previous close.
+- Crypto uses day change versus `00:00 UTC`, since these instruments trade continuously.
+- Alert rules are stored in browser storage only.
+- Kubernetes manifests target a local development cluster and are not production-hardened.
 
 ## Known Limitations
 
-- Data resets when the backend process restarts.
+- Data resets when the backend restarts.
 - No real exchange connectivity or order execution is included.
-- Alert rules are persisted in browser storage only; they are not stored on the backend.
-- Frontend tests are not included; backend tests cover the core data and protocol logic.
+- Frontend automated tests are not included.
+- On some Windows setups, `frontend/dist` can be locked by another process and cause `vite build` cleanup to fail until the lock is released.
+
+## What Was Verified During Development
+
+- Local Node.js run for frontend and backend
+- Backend build and unit tests
+- Frontend lint and type-check
+- Docker Compose startup
+- Kubernetes deployment on Docker Desktop Kubernetes, with port-forward verification for the frontend and backend services

@@ -8,6 +8,11 @@
       --tw-leading: initial;
       --tw-font-weight: initial;
       --tw-tracking: initial;
+      --tw-ordinal: initial;
+      --tw-slashed-zero: initial;
+      --tw-numeric-figure: initial;
+      --tw-numeric-spacing: initial;
+      --tw-numeric-fraction: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
       --tw-shadow-alpha: 100%;
@@ -55,6 +60,7 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-emerald-100: oklch(95% .052 163.051);
     --color-emerald-400: oklch(76.5% .177 163.223);
     --color-cyan-100: oklch(95.6% .045 203.388);
     --color-cyan-200: oklch(91.7% .08 205.041);
@@ -492,6 +498,10 @@
     display: inline-flex;
   }
 
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
+
   .h-5 {
     height: calc(var(--spacing) * 5);
   }
@@ -538,6 +548,10 @@
 
   .w-1\/2 {
     width: 50%;
+  }
+
+  .w-3 {
+    width: calc(var(--spacing) * 3);
   }
 
   .w-5 {
@@ -642,6 +656,10 @@
 
   .justify-start {
     justify-content: flex-start;
+  }
+
+  .gap-1\.5 {
+    gap: calc(var(--spacing) * 1.5);
   }
 
   .gap-2 {
@@ -869,6 +887,16 @@
     }
   }
 
+  .bg-emerald-400\/25 {
+    background-color: #00d29440;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-emerald-400\/25 {
+      background-color: color-mix(in oklab, var(--color-emerald-400) 25%, transparent);
+    }
+  }
+
   .bg-rose-300\/10 {
     background-color: #ffa2ae1a;
   }
@@ -886,6 +914,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-rose-500\/10 {
       background-color: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
+    }
+  }
+
+  .bg-rose-500\/20 {
+    background-color: #ff235733;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-rose-500\/20 {
+      background-color: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
     }
   }
 
@@ -1217,6 +1255,10 @@
     }
   }
 
+  .text-emerald-100 {
+    color: var(--color-emerald-100);
+  }
+
   .text-rose-100 {
     color: var(--color-rose-100);
   }
@@ -1251,6 +1293,11 @@
 
   .uppercase {
     text-transform: uppercase;
+  }
+
+  .tabular-nums {
+    --tw-numeric-spacing: tabular-nums;
+    font-variant-numeric: var(--tw-ordinal, ) var(--tw-slashed-zero, ) var(--tw-numeric-figure, ) var(--tw-numeric-spacing, ) var(--tw-numeric-fraction, );
   }
 
   .shadow-2xl {
@@ -1727,6 +1774,31 @@ body:after {
 }
 
 @property --tw-tracking {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-ordinal {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-slashed-zero {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-numeric-figure {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-numeric-spacing {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-numeric-fraction {
   syntax: "*";
   inherits: false
 }

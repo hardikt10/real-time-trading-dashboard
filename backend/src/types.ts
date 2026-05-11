@@ -7,6 +7,7 @@ export interface TickerDefinition {
   name: string;
   assetClass: "equity" | "crypto";
   basePrice: number;
+  previousClose: number;
   volatilityBps: number;
 }
 
@@ -15,6 +16,9 @@ export interface LiveTicker {
   name: string;
   assetClass: "equity" | "crypto";
   price: number;
+  changeReferencePrice: number;
+  changeReferenceLabel: "previous_close" | "utc_midnight";
+  changeAmount: number;
   changePercent: number;
   updatedAt: string;
 }
