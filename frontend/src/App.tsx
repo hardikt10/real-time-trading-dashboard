@@ -126,7 +126,7 @@ function App() {
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-10 md:px-8">
         <div className="rounded-[32px] border border-slate-800/90 bg-slate-950/50 px-6 py-5 text-sm text-slate-200 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur">
-          Restoring demo session...
+          Restoring authenticated session...
         </div>
       </main>
     );

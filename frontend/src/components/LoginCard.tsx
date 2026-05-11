@@ -32,22 +32,22 @@ export const LoginCard = ({ error, isSubmitting, onLogin }: LoginCardProps) => {
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent)]" />
           <div className="pointer-events-none absolute right-0 top-0 h-52 w-52 bg-[radial-gradient(circle,rgba(34,211,238,0.14),transparent_68%)] blur-2xl" />
           <p className="text-xs uppercase tracking-[0.32em] text-(--accent-muted)">
-            Mocked Authentication
+            Session-Based Access
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
-            Sign in through a cookie-backed demo session built for the dashboard.
+            Access the trading workspace through a server-managed session.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400">
-            The server owns the demo session, REST calls reuse the same cookie, and the live
-            stream connects through the same authenticated context.
+            The authentication flow is backed by a server-issued session so REST requests and
+            real-time market streaming operate within the same authenticated context.
           </p>
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <div className="rounded-3xl border border-slate-800/90 bg-slate-950/45 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Demo Email</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Access Email</p>
               <p className="mt-2 text-lg font-semibold text-white">{DEMO_LOGIN.email}</p>
             </div>
             <div className="rounded-3xl border border-slate-800/90 bg-slate-950/45 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Demo Password</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Access Password</p>
               <p className="mt-2 text-lg font-semibold text-white">{DEMO_LOGIN.password}</p>
             </div>
           </div>
@@ -60,7 +60,8 @@ export const LoginCard = ({ error, isSubmitting, onLogin }: LoginCardProps) => {
           <p className="text-xs uppercase tracking-[0.26em] text-(--accent-muted)">Sign In</p>
           <h2 className="mt-3 text-3xl font-semibold text-white">Access the dashboard</h2>
           <p className="mt-3 text-sm leading-6 text-slate-300">
-            Use the demo credentials below, or change them to test the invalid-session path.
+            Use the provided credentials to review the authenticated experience, or enter
+            alternate values to validate the rejected-access path.
           </p>
 
           <label className="mt-8 block text-sm font-medium text-slate-200" htmlFor="email">
@@ -99,7 +100,7 @@ export const LoginCard = ({ error, isSubmitting, onLogin }: LoginCardProps) => {
               disabled={isSubmitting}
               className="hover:cursor-pointer flex-1 rounded-2xl bg-cyan-400 px-4 py-3 font-medium text-slate-950 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmitting ? "Signing In..." : "Enter Dashboard"}
+              {isSubmitting ? "Signing In..." : "Sign In"}
             </button>
             <button
               type="button"
@@ -109,7 +110,7 @@ export const LoginCard = ({ error, isSubmitting, onLogin }: LoginCardProps) => {
               }}
               className="hover:cursor-pointer rounded-2xl border border-slate-700/80 px-4 py-3 text-slate-200 transition hover:border-cyan-400/35 hover:bg-slate-900/80"
             >
-              Auto Fill
+              Use Demo Credentials
             </button>
           </div>
         </form>
